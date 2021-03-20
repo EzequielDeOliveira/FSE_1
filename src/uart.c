@@ -4,19 +4,14 @@
 #include <fcntl.h>
 #include <termios.h>
 #include "crc16.h"
+#include "uart.h"
 
-#define SERVER_CODE 0x01
-#define REQUEST_CODE 0x23
-#define REQUEST_LM35_TEMPERATURE 0xC1
-#define REQUEST_POTENTIOMETER_TEMPERATURE 0xC2
-#define LM35 1
-#define POTENTIOMETER 2
+int uart0 = -1;
 
 int init_uart()
 {
-    int uart0_filestream = -1;
-    uart0_filestream = open("/dev/serial0", O_RDWR | O_NOCTTY | O_NDELAY);
-    if (uart0_filestream == -1)
+    uart0 = open("/dev/serial0", O_RDWR | O_NOCTTY | O_NDELAY);
+    if (uart0 == -1)
     {
         printf("Failed to init UART\n");
     }
@@ -26,17 +21,17 @@ int init_uart()
     }
 
     struct termios options;
-    tcgetattr(uart0_filestream, &options);
+    tcgetattr(uart0, &options);
     options.c_cflag = B9600 | CS8 | CLOCAL | CREAD;
     options.c_iflag = IGNPAR;
     options.c_oflag = 0;
     options.c_lflag = 0;
-    tcflush(uart0_filestream, TCIFLUSH);
-    tcsetattr(uart0_filestream, TCSANOW, &options);
-    return uart0_filestream;
+    tcflush(uart0, TCIFLUSH);
+    tcsetattr(uart0, TCSANOW, &options);
+    return uart0;
 }
 
-void write_uart_message(int uart, int code)
+void write_uart_message(int code)
 {
     unsigned char tx_buffer[20];
     unsigned char *p_tx_buffer;
@@ -63,10 +58,10 @@ void write_uart_message(int uart, int code)
     memcpy(&tx_buffer[(p_tx_buffer - &tx_buffer[0])], &crc, 2);
     p_tx_buffer += 2; // CRC
 
-    if (uart != -1)
+    if (uart0 != -1)
     {
         printf("Writing on UART ...\n");
-        int count = write(uart, &tx_buffer[0], (p_tx_buffer - &tx_buffer[0]));
+        int count = write(uart0, &tx_buffer[0], (p_tx_buffer - &tx_buffer[0]));
         if (count < 0)
         {
             printf("UART TX error\n");
@@ -80,26 +75,44 @@ void write_uart_message(int uart, int code)
     sleep(1);
 }
 
-void read_uart_message(int uart)
+float read_uart_message()
 {
-    if (uart != -1)
+    float result;
+    if (uart0 != -1)
     {
         unsigned char rx_buffer[256];
-        int rx_length = read(uart, (void *)rx_buffer, 255);
+        int rx_length = read(uart0, (void *)rx_buffer, 255);
         if (rx_length < 0)
         {
-            printf("Read Error %d", rx_length);
+            result = -1;
         }
         else if (rx_length == 0)
         {
-            printf("Nothing \n");
+            result = -1;
         }
         else
         {
             rx_buffer[rx_length] = '\0';
             float f;
             memcpy(&f, &rx_buffer[3], 4);
-            printf("float: %f\n", f);
+            result = f;
         }
     }
+    return result;
+}
+
+float pontentiometer_temperature()
+{
+    write_uart_message(2);
+    return read_uart_message();
+}
+
+float lm35_temperature()
+{
+    write_uart_message(1);
+    return read_uart_message();
+}
+
+void close_uart(){
+    close(uart0);
 }

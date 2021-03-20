@@ -25,7 +25,7 @@ int8_t user_i2c_write(uint8_t reg_addr, const uint8_t *data, uint32_t len, void 
 
 int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev);
 
-void bme280_temperature()
+float bme280_temperature()
 {
     struct bme280_dev dev;
 
@@ -76,13 +76,15 @@ void bme280_temperature()
         fprintf(stderr, "Failed to get sensor data (code %+d).", rslt);
     }
 
-    print_sensor_data(&comp_data);
+    /* print_sensor_data(&comp_data); */
 
     if (rslt != BME280_OK)
     {
         fprintf(stderr, "Failed to stream sensor data (code %+d).\n", rslt);
         exit(1);
     }
+
+    return comp_data.temperature;
 }
 
 int8_t user_i2c_read(uint8_t reg_addr, uint8_t *data, uint32_t len, void *intf_ptr)

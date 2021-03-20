@@ -1,27 +1,44 @@
 #include <stdio.h>
+#include <signal.h>
 #include "uart.h"
 #include "led.h"
 #include "bme280temperature.h"
+#include "pid.h"
+#include "gpio.h"
 
 void finish();
 
-int main(int argc, char *argv[]) {
-    
-    int uart = init_uart();
+int main(int argc, char *argv[])
+{
+    float TR, TI, TE, control_output;
 
-    write_uart_message(uart, 1);
+    signal(SIGINT, finish);
+    pid_configure_constants(5.0, 1.0, 5.0);
 
-    read_uart_message(uart);
+    while (1)
+    {
 
-    finish(uart);
+        TR = pontentiometer_temperature();
+        TI = lm35_temperature();
+        TE = bme280_temperature();
 
-    print_lcd(12.0,12.0,12.0);
+        print_lcd(TR, TI, TE);
 
-    bme280_temperature();
+        pid_update_reference(TR);
 
-    return 0;
+        control_output = pid_control(TI);
+
+        manage_gpio_devices(control_output);
+
+        usleep(1000000);
+    }
+
+    return (0);
 }
 
-void finish(int uart){
-    close(uart);
+void finish(int uart)
+{
+    deactivate_fan_and_resistor();
+    close_uart();
+    exit(0);
 }
