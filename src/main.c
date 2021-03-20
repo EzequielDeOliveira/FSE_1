@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "uart.h"
+#include "led.h"
 
 void finish();
 
@@ -12,6 +13,8 @@ int main(int argc, char *argv[]) {
     read_uart_message(uart);
 
     finish(uart);
+
+    print_lcd(12.0,12.0,12.0);
 
     return 0;
 }

@@ -26,7 +26,7 @@ void ClrLcd(void); // clr LCD return home
 void typeln(const char *s);
 int fd;  // seen by all subroutines
 
-void print_lcd(float tr, int ti, int te)   {
+void print_lcd(float tr, float ti, float te)   {
 
   if (wiringPiSetup () == -1) exit (1);
 
