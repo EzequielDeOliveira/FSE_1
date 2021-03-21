@@ -48,7 +48,7 @@ void manage_gpio_devices(int intensity)
         activate_resistor(intensity);
         deactivate_fan();
     } else if(intensity < -40) {
-        activate_fan(intensity);
+        activate_fan((int) intensity * -1);
         deactivate_resistor();
     } else {
         deactivate_fan_and_resistor();

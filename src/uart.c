@@ -6,10 +6,9 @@
 #include "crc16.h"
 #include "uart.h"
 
-int uart0 = -1;
-
 int init_uart()
 {
+    int uart0 = -1;
     uart0 = open("/dev/serial0", O_RDWR | O_NOCTTY | O_NDELAY);
     if (uart0 == -1)
     {
@@ -31,7 +30,7 @@ int init_uart()
     return uart0;
 }
 
-void write_uart_message(int code)
+void write_uart_message(int uart0, int code)
 {
     unsigned char tx_buffer[20];
     unsigned char *p_tx_buffer;
@@ -71,11 +70,10 @@ void write_uart_message(int code)
             printf("Writed.\n");
         }
     }
-
-    sleep(1);
+    usleep(1000000);
 }
 
-float read_uart_message()
+float read_uart_message(int uart0)
 {
     float result;
     if (uart0 != -1)
@@ -103,16 +101,18 @@ float read_uart_message()
 
 float pontentiometer_temperature()
 {
-    write_uart_message(2);
-    return read_uart_message();
+    int uart = init_uart();
+    write_uart_message(uart, 2);
+    float temp = read_uart_message(uart);
+    close(uart);
+    return temp;
 }
 
 float lm35_temperature()
 {
-    write_uart_message(1);
-    return read_uart_message();
-}
-
-void close_uart(){
-    close(uart0);
+    int uart = init_uart();
+    write_uart_message(uart, 1);
+    float temp = read_uart_message(uart);
+    close(uart);
+    return temp;
 }

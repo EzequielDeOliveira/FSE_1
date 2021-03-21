@@ -39,6 +39,5 @@ int main(int argc, char *argv[])
 void finish(int uart)
 {
     deactivate_fan_and_resistor();
-    close_uart();
     exit(0);
 }

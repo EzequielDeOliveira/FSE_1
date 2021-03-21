@@ -9,10 +9,9 @@
 #define UART_H_
 
 int init_uart();
-void write_uart_message(int code);
-float read_uart_message();
+void write_uart_message(int uart0, int code);
+float read_uart_message(int uart0);
 float pontentiometer_temperature();
 float lm35_temperature();
-void close_uart();
 
 #endif
