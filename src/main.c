@@ -49,6 +49,7 @@ void main_loop()
 {
     float Kp = 5.0, Ki = 1.0, Kd = 5.0;
     float aux_TR;
+    int time_to_write_csv = 0;
 
     signal(SIGINT, finish);
     pid_configure_constants(Kp, Ki, Kd);
@@ -74,9 +75,15 @@ void main_loop()
 
         control_output = pid_control(TI);
 
-        write_csv(TR, TE, TI, control_output);
-
         manage_gpio_devices(control_output);
+
+        if (time_to_write_csv = 0)
+            time_to_write_csv++;
+        else if (time_to_write_csv == 1)
+        {
+            write_csv(TR, TE, TI, control_output);
+            time_to_write_csv = 0;
+        }
 
         usleep(1000000);
     }

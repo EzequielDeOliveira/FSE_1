@@ -31,6 +31,6 @@ void write_csv(float TR, float TE, float TI, float intensity)
 
     get_current_time();
 
-    fprintf(file, "%s, %f, %lf, %f, %lf\n", buffer, TI, TE, TR, intensity);
+    fprintf(file,"%s,%4.2f,%4.2f,%4.2f,%4.2f\n", buffer, TI, TE, TR, intensity);
     fclose(file);
 }

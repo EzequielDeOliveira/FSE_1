@@ -75,12 +75,12 @@ float read_uart_message(int uart0)
         if (rx_length < 0)
         {
             printf("Error on read UART.\n");
-            result = -1;
+            return -1;
         }
         else if (rx_length == 0)
         {
             printf("Nothing on UART\n");
-            result = -1;
+            return -1;
         }
         else
         {
@@ -90,7 +90,7 @@ float read_uart_message(int uart0)
         if (rx_length != 9)
         {
             printf("Wrong uart data!\n");
-            result = -1;
+            return -1;
         }
 
         short crc_received;
@@ -101,17 +101,18 @@ float read_uart_message(int uart0)
         if (crc_received != calcula_CRC(response, 7))
         {
             printf("Wrong crc!\n");
-            result = -1;
+            return -1;
         }
 
         if (result == 0)
         {
             float f;
             memcpy(&f, &rx_buffer[3], 4);
-            result = f;
+            return f;
         }
+    } else {
+        return -1;
     }
-    return result;
 }
 
 float pontentiometer_temperature(float previous_temp)
