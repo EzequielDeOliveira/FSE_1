@@ -16,7 +16,7 @@
 
 #define ENABLE  0b00000100 // Enable bit
 
-void lcd_init(void);
+void lcd_setup(void);
 void lcd_byte(int bits, int mode);
 void lcd_toggle_enable(int bits);
 
@@ -28,14 +28,6 @@ int fd;  // seen by all subroutines
 
 void print_lcd(float tr, float ti, float te)   {
 
-  if (wiringPiSetup () == -1) exit (1);
-
-  fd = wiringPiI2CSetup(I2C_ADDR);
-
-  lcd_init(); // setup LCD
-
-  delay(2000);
-  ClrLcd();
   lcdLoc(LINE1);
   typeln("TR:");
   typeFloat(tr);
@@ -52,7 +44,7 @@ void typeFloat(float myFloat)   {
   typeln(buffer);
 }
 
-void ClrLcd(void)   {
+void ClrLcd()   {
   lcd_byte(0x01, LCD_CMD);
   lcd_byte(0x02, LCD_CMD);
 }
@@ -98,8 +90,11 @@ void lcd_toggle_enable(int bits)   {
 }
 
 
-void lcd_init()   {
+void lcd_setup()   {
   // Initialise display
+  if (wiringPiSetup () == -1) exit (1);
+
+  fd = wiringPiI2CSetup(I2C_ADDR);
   lcd_byte(0x33, LCD_CMD); // Initialise
   lcd_byte(0x32, LCD_CMD); // Initialise
   lcd_byte(0x06, LCD_CMD); // Cursor move direction

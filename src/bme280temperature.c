@@ -15,35 +15,18 @@ struct identifier
     int8_t fd;
 };
 
-void user_delay_us(uint32_t period, void *intf_ptr);
+struct identifier id;
+struct bme280_dev dev;
+int8_t rslt = BME280_OK;
 
-void print_sensor_data(struct bme280_data *comp_data);
-
-int8_t user_i2c_read(uint8_t reg_addr, uint8_t *data, uint32_t len, void *intf_ptr);
-
-int8_t user_i2c_write(uint8_t reg_addr, const uint8_t *data, uint32_t len, void *intf_ptr);
-
-int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev);
-
-float bme280_temperature()
+void bme280_setup()
 {
-    struct bme280_dev dev;
-
-    struct identifier id;
-
-    /* Structure to get the pressure, temperature and humidity values */
-    struct bme280_data comp_data;
-
-    /* Variable to define the result */
-    int8_t rslt = BME280_OK;
-
     if ((id.fd = open("/dev/i2c-1", O_RDWR)) < 0)
     {
         fprintf(stderr, "Failed to open the i2c bus %s\n", "/dev/i2c-1");
         exit(1);
     }
 
-    /* Make sure to select BME280_I2C_ADDR_PRIM or BME280_I2C_ADDR_SEC as needed */
     id.dev_addr = BME280_I2C_ADDR_PRIM;
 
     dev.intf = BME280_I2C_INTF;
@@ -67,6 +50,12 @@ float bme280_temperature()
         fprintf(stderr, "Failed to initialize the device (code %+d).\n", rslt);
         exit(1);
     }
+}
+
+float bme280_temperature()
+{
+    /* Structure to get the pressure, temperature and humidity values */
+    struct bme280_data comp_data;
 
     rslt = stream_sensor_data_forced_mode(&dev);
 

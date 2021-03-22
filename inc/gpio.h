@@ -12,5 +12,6 @@ void deactivate_fan();
 void activate_fan(int intensity);
 void deactivate_resistor();
 void activate_resistor(int intensity);
+void gpio_setup();
 
 #endif

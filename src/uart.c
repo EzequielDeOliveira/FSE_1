@@ -59,15 +59,11 @@ void write_uart_message(int uart0, int code)
 
     if (uart0 != -1)
     {
-        printf("Writing on UART ...\n");
         int count = write(uart0, &tx_buffer[0], (p_tx_buffer - &tx_buffer[0]));
         if (count < 0)
         {
-            printf("UART TX error\n");
-        }
-        else
-        {
-            printf("Writed.\n");
+            printf("UART error on write\n");
+            exit(1);
         }
     }
     usleep(1000000);
@@ -82,10 +78,12 @@ float read_uart_message(int uart0)
         int rx_length = read(uart0, (void *)rx_buffer, 255);
         if (rx_length < 0)
         {
+            printf("Error on read UART.\n");
             result = -1;
         }
         else if (rx_length == 0)
         {
+            printf("Nothing on UART\n");
             result = -1;
         }
         else
