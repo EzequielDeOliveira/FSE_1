@@ -2,7 +2,10 @@
 #include <stdlib.h>
 #include <time.h>
 
-void csv_setup(){
+char buffer[26];
+
+void csv_setup()
+{
     FILE *file;
 
     file = fopen("data.csv", "w");
@@ -10,10 +13,10 @@ void csv_setup(){
     fclose(file);
 }
 
-char* get_current_time() {
+void get_current_time()
+{
     time_t timer;
-    char buffer[26];
-    struct tm* tm_info;
+    struct tm *tm_info;
 
     timer = time(NULL);
     tm_info = localtime(&timer);
@@ -21,10 +24,13 @@ char* get_current_time() {
     strftime(buffer, 26, "%Y-%m-%d %H:%M:%S", tm_info);
 }
 
-void write_csv(float TR, float TE, float TI, float intensity) {
+void write_csv(float TR, float TE, float TI, float intensity)
+{
     FILE *file;
     file = fopen("data.csv", "a");
 
-    fprintf(file, "%s, %f, %lf, %f, %lf\n", get_current_time(), TI, TE, TR, intensity);
+    get_current_time();
+
+    fprintf(file, "%s, %f, %lf, %f, %lf\n", buffer, TI, TE, TR, intensity);
     fclose(file);
 }

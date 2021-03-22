@@ -56,9 +56,9 @@ void main_loop()
     {
 
         if (reference_potentiometer)
-            TR = pontentiometer_temperature();
+            TR = pontentiometer_temperature(TR);
 
-        TI = lm35_temperature();
+        TI = lm35_temperature(TI);
         TE = bme280_temperature();
 
         print_lcd(TR, TI, TE);

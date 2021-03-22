@@ -11,7 +11,7 @@
 int init_uart();
 void write_uart_message(int uart0, int code);
 float read_uart_message(int uart0);
-float pontentiometer_temperature();
-float lm35_temperature();
+float pontentiometer_temperature(float previous_temp);
+float lm35_temperature(float previous_temp);
 
 #endif

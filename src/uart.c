@@ -67,7 +67,7 @@ void write_uart_message(int uart0, int code)
 
 float read_uart_message(int uart0)
 {
-    float result;
+    float result = 0;
     if (uart0 != -1)
     {
         unsigned char rx_buffer[256];
@@ -85,6 +85,27 @@ float read_uart_message(int uart0)
         else
         {
             rx_buffer[rx_length] = '\0';
+        }
+
+        if (rx_length != 9)
+        {
+            printf("Wrong uart data!\n");
+            result = -1;
+        }
+
+        short crc_received;
+        memcpy(&crc_received, &rx_buffer[rx_length - 2], 2);
+
+        unsigned char response[7];
+        memcpy(&response, &rx_buffer[0], rx_length - 2);
+        if (crc_received != calcula_CRC(response, 7))
+        {
+            printf("Wrong crc!\n");
+            result = -1;
+        }
+
+        if (result == 0)
+        {
             float f;
             memcpy(&f, &rx_buffer[3], 4);
             result = f;
@@ -93,20 +114,28 @@ float read_uart_message(int uart0)
     return result;
 }
 
-float pontentiometer_temperature()
+float pontentiometer_temperature(float previous_temp)
 {
     int uart = init_uart();
     write_uart_message(uart, 2);
     float temp = read_uart_message(uart);
+    if (temp < 0)
+    {
+        temp = previous_temp;
+    }
     close(uart);
     return temp;
 }
 
-float lm35_temperature()
+float lm35_temperature(float previous_temp)
 {
     int uart = init_uart();
     write_uart_message(uart, 1);
     float temp = read_uart_message(uart);
+    if (temp < 0)
+    {
+        temp = previous_temp;
+    }
     close(uart);
     return temp;
 }
