@@ -19,6 +19,16 @@ struct identifier id;
 struct bme280_dev dev;
 int8_t rslt = BME280_OK;
 
+void user_delay_us(uint32_t period, void *intf_ptr);
+
+void print_sensor_data(struct bme280_data *comp_data);
+
+int8_t user_i2c_read(uint8_t reg_addr, uint8_t *data, uint32_t len, void *intf_ptr);
+
+int8_t user_i2c_write(uint8_t reg_addr, const uint8_t *data, uint32_t len, void *intf_ptr);
+
+int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev);
+
 void bme280_setup()
 {
     if ((id.fd = open("/dev/i2c-1", O_RDWR)) < 0)
@@ -50,6 +60,11 @@ void bme280_setup()
         fprintf(stderr, "Failed to initialize the device (code %+d).\n", rslt);
         exit(1);
     }
+}
+
+void close_bme280()
+{
+    close(id.fd);
 }
 
 float bme280_temperature()

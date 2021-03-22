@@ -14,10 +14,6 @@ int init_uart()
     {
         printf("Failed to init UART\n");
     }
-    else
-    {
-        printf("UART initialized\n");
-    }
 
     struct termios options;
     tcgetattr(uart0, &options);

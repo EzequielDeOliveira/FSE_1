@@ -4,39 +4,40 @@
 #include <softPwm.h> /* include header file for software PWM */
 #include "gpio.h"
 
-void gpio_setup() {
+void gpio_setup()
+{
     wiringPiSetup();
+    pinMode(RESISTOR_PIN, OUTPUT);
+    pinMode(FAN_PIN, OUTPUT);
 }
 
 void activate_resistor(int intensity)
 {
-    pinMode(RESISTOR_PIN, OUTPUT);
+
     softPwmCreate(RESISTOR_PIN, PWM_MIN_RANGE, PWM_MAX_RANGE);
     softPwmWrite(RESISTOR_PIN, intensity);
 }
 
 void deactivate_resistor()
 {
-    pinMode(RESISTOR_PIN, OUTPUT);
     softPwmCreate(RESISTOR_PIN, PWM_MIN_RANGE, PWM_MAX_RANGE);
     softPwmWrite(RESISTOR_PIN, PWM_MIN_RANGE);
 }
 
 void activate_fan(int intensity)
 {
-    pinMode(FAN_PIN, OUTPUT);
     softPwmCreate(FAN_PIN, PWM_MIN_RANGE, PWM_MAX_RANGE);
     softPwmWrite(FAN_PIN, intensity);
 }
 
 void deactivate_fan()
 {
-    pinMode(FAN_PIN, OUTPUT);
     softPwmCreate(FAN_PIN, PWM_MIN_RANGE, PWM_MAX_RANGE);
     softPwmWrite(FAN_PIN, PWM_MIN_RANGE);
 }
 
-void deactivate_fan_and_resistor() {
+void deactivate_fan_and_resistor()
+{
     deactivate_resistor();
     deactivate_fan();
 }
@@ -47,10 +48,14 @@ void manage_gpio_devices(int intensity)
     {
         activate_resistor(intensity);
         deactivate_fan();
-    } else if(intensity < -40) {
-        activate_fan((int) intensity * -1);
+    }
+    else if (intensity < -40)
+    {
+        activate_fan((int)intensity * -1);
         deactivate_resistor();
-    } else {
+    }
+    else
+    {
         deactivate_fan_and_resistor();
     }
 }

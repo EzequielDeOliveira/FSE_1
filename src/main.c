@@ -8,6 +8,7 @@
 #include "bme280temperature.h"
 #include "pid.h"
 #include "gpio.h"
+#include "csv.h"
 
 void finish();
 void main_loop();
@@ -25,6 +26,7 @@ int main(int argc, char *argv[])
     lcd_setup();
     gpio_setup();
     bme280_setup();
+    csv_setup();
 
     pthread_create(&tid[0], NULL, (void *)main_loop, (void *)NULL);
     pthread_create(&tid[1], NULL, (void *)menu, (void *)NULL);
@@ -39,6 +41,7 @@ void finish()
 {
     deactivate_fan_and_resistor();
     ClrLcd();
+    close_bme280();
     exit(0);
 }
 
@@ -63,6 +66,8 @@ void main_loop()
         pid_update_reference(TR);
 
         control_output = pid_control(TI);
+
+        write_csv(TR, TE, TI, control_output);
 
         manage_gpio_devices(control_output);
 
