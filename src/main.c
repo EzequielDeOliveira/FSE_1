@@ -48,6 +48,7 @@ void finish()
 void main_loop()
 {
     float Kp = 5.0, Ki = 1.0, Kd = 5.0;
+    float aux_TR;
 
     signal(SIGINT, finish);
     pid_configure_constants(Kp, Ki, Kd);
@@ -56,7 +57,13 @@ void main_loop()
     {
 
         if (reference_potentiometer)
-            TR = pontentiometer_temperature(TR);
+        {
+            aux_TR = pontentiometer_temperature(TR);
+            if (aux_TR > TE && aux_TR < 100)
+            {
+                TR = aux_TR;
+            }
+        }
 
         TI = lm35_temperature(TI);
         TE = bme280_temperature();
@@ -109,8 +116,12 @@ void define_reference()
     clearscr();
     printf("Temperatura referência: ");
     scanf("%f", &reference);
-    pid_update_reference(reference);
-    reference_potentiometer = 0;
+    if (reference <= TE || reference >= 100)
+    {
+        pid_update_reference(reference);
+        TR = reference;
+        reference_potentiometer = 0;
+    }
     clearscr();
 }
 

@@ -119,7 +119,7 @@ float pontentiometer_temperature(float previous_temp)
     int uart = init_uart();
     write_uart_message(uart, 2);
     float temp = read_uart_message(uart);
-    if (temp < 0)
+    if (temp < 0 )
     {
         temp = previous_temp;
     }
