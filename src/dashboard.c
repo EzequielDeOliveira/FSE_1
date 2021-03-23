@@ -11,7 +11,6 @@ int startx = 0;
 int starty = 0;
 WINDOW *menu_win, *info_win;
 
-
 char *choices[] = {
 	"	Utilizar referência do potenciômetro",
 	"	Inserir temperatura referência",
@@ -22,42 +21,51 @@ void print_menu(WINDOW *menu_win, int highlight);
 void clear_window(WINDOW *window);
 void new_temperature_reference();
 
-void show_infos(float TR,float TI, float TE, float intensity, int potentiometer) {
-    clear_window(info_win);
-    info_win = newwin(HEIGHT, WIDTH, 0, WIDTH);
+void show_infos(float TR, float TI, float TE, float intensity, int potentiometer)
+{
+	clear_window(info_win);
+	info_win = newwin(HEIGHT, WIDTH, 0, WIDTH);
 	box(info_win, 0, 0);
-    if(potentiometer){
-    	mvwprintw(info_win, 4, 2, "Temperatura referência inserida do potenciômetro");
-    } else {
-    	mvwprintw(info_win, 4, 2, "Temperatura referência inserida por linha de comando  ");
-    }
+	if (potentiometer)
+	{
+		mvwprintw(info_win, 4, 2, "Temperatura referência inserida do potenciômetro");
+	}
+	else
+	{
+		mvwprintw(info_win, 4, 2, "Temperatura referência inserida por linha de comando  ");
+	}
 
-    if(intensity > 0){
-        wattron(info_win ,COLOR_PAIR(2));
-    	mvwprintw(info_win, 6, 15, "Ventoinha");
-        wattroff(info_win, COLOR_PAIR(2));
-        wattron(info_win ,COLOR_PAIR(1));
-    	mvwprintw(info_win, 6, 30, "Resistor");
-        wattroff(info_win, COLOR_PAIR(1));
-    } else if(intensity <= -40) {
-        wattron(info_win ,COLOR_PAIR(1));
-    	mvwprintw(info_win, 6, 15, "Ventoinha");
-        wattroff(info_win, COLOR_PAIR(1));
-        wattron(info_win ,COLOR_PAIR(2));
-    	mvwprintw(info_win, 6, 30, "Resistor");
-        wattroff(info_win, COLOR_PAIR(2));
-    } else {
-        wattron(info_win ,COLOR_PAIR(2));
-    	mvwprintw(info_win, 6, 15, "Ventoinha");
-        wattroff(info_win, COLOR_PAIR(2));
-        wattron(info_win ,COLOR_PAIR(2));
-    	mvwprintw(info_win, 6, 30, "Resistor");
-        wattroff(info_win, COLOR_PAIR(2));
-    }
+	if (intensity > 0)
+	{
+		wattron(info_win, COLOR_PAIR(2));
+		mvwprintw(info_win, 6, 15, "Ventoinha");
+		wattroff(info_win, COLOR_PAIR(2));
+		wattron(info_win, COLOR_PAIR(1));
+		mvwprintw(info_win, 6, 30, "Resistor");
+		wattroff(info_win, COLOR_PAIR(1));
+	}
+	else if (intensity <= -40)
+	{
+		wattron(info_win, COLOR_PAIR(1));
+		mvwprintw(info_win, 6, 15, "Ventoinha");
+		wattroff(info_win, COLOR_PAIR(1));
+		wattron(info_win, COLOR_PAIR(2));
+		mvwprintw(info_win, 6, 30, "Resistor");
+		wattroff(info_win, COLOR_PAIR(2));
+	}
+	else
+	{
+		wattron(info_win, COLOR_PAIR(2));
+		mvwprintw(info_win, 6, 15, "Ventoinha");
+		wattroff(info_win, COLOR_PAIR(2));
+		wattron(info_win, COLOR_PAIR(2));
+		mvwprintw(info_win, 6, 30, "Resistor");
+		wattroff(info_win, COLOR_PAIR(2));
+	}
 
 	mvwprintw(info_win, 9, 2, "TR: %4.2f", TR);
 	mvwprintw(info_win, 10, 2, "TI: %4.2f TE: %4.2f", TI, TE);
-    wrefresh(info_win);
+	wrefresh(info_win);
 }
 
 void dashboard()
@@ -71,9 +79,9 @@ void dashboard()
 	noecho();
 	cbreak(); /* Line buffering disabled. pass on everything */
 	curs_set(0);
-    start_color();
-    init_pair(1, COLOR_GREEN, COLOR_BLACK);
-    init_pair(2, COLOR_RED, COLOR_BLACK);
+	start_color();
+	init_pair(1, COLOR_GREEN, COLOR_BLACK);
+	init_pair(2, COLOR_RED, COLOR_BLACK);
 
 	menu_win = newwin(HEIGHT, WIDTH, 0, 0);
 	keypad(menu_win, TRUE);
@@ -98,9 +106,10 @@ void dashboard()
 			break;
 		case 10:
 			choice = highlight;
-            if (choice == 1) {
-                set_reference_input(1, 0.0);
-            }
+			if (choice == 1)
+			{
+				set_reference_input(1, 0.0);
+			}
 			if (choice == 2)
 			{
 				clear_window(menu_win);
@@ -174,5 +183,5 @@ void new_temperature_reference()
 	wmove(local_window, _starty + 1, _startx + 38);
 	wscanw(local_window, "%f", &reference);
 
-    set_reference_input(0, reference);
+	set_reference_input(0, reference);
 }

@@ -18,4 +18,4 @@
 void finish();
 void set_reference_input(int use_potenciometer, float new_reference);
 
-#endif 
+#endif

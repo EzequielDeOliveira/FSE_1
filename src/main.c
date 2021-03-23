@@ -35,7 +35,7 @@ void finish()
     close_bme280();
     close_uart();
     refresh();
-	endwin();
+    endwin();
     exit(0);
 }
 
@@ -123,10 +123,12 @@ void define_reference()
     }
 }
 
-void set_reference_input(int use_potenciometer, float new_reference){
+void set_reference_input(int use_potenciometer, float new_reference)
+{
     printf("%4.2f", new_reference);
     reference_potentiometer = use_potenciometer;
-    if(!use_potenciometer) {
+    if (!use_potenciometer && new_reference > TE && new_reference < 100)
+    {
         pid_update_reference(new_reference);
         TR = new_reference;
     }
