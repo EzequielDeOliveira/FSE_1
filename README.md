@@ -37,6 +37,11 @@ $ make run
 ![image](https://user-images.githubusercontent.com/37127457/112221805-a4f2cc80-8c06-11eb-88dc-285c70767887.png)
 
 
+## Interface 
+
+![image](https://user-images.githubusercontent.com/37127457/112222464-5560d080-8c07-11eb-8530-7fa2895c4536.png)
+
+
 ## Referências
 
 - [PID - Wikipedia](https://pt.wikipedia.org/wiki/Controlador_proporcional_integral_derivativo)  
