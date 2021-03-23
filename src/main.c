@@ -1,20 +1,10 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <pthread.h>
-
-#include "uart.h"
-#include "lcd.h"
-#include "bme280temperature.h"
-#include "pid.h"
-#include "gpio.h"
-#include "csv.h"
+#include "main.h"
+#include "dashboard.h"
 
 void finish();
 void main_loop();
 void menu();
 void define_reference();
-void clearscr();
 
 float TR = 0, TI = 0, TE = 0, control_output = 0;
 int reference_potentiometer = 1;
@@ -30,7 +20,7 @@ int main(int argc, char *argv[])
     init_uart();
 
     pthread_create(&tid[0], NULL, (void *)main_loop, (void *)NULL);
-    pthread_create(&tid[1], NULL, (void *)menu, (void *)NULL);
+    pthread_create(&tid[1], NULL, (void *)dashboard, (void *)NULL);
 
     pthread_join(tid[0], NULL);
     pthread_join(tid[1], NULL);
@@ -44,6 +34,8 @@ void finish()
     ClrLcd();
     close_bme280();
     close_uart();
+    refresh();
+	endwin();
     exit(0);
 }
 
@@ -87,6 +79,8 @@ void main_loop()
             time_to_write_csv = 0;
         }
 
+        show_infos(TR, TI, TE, control_output, reference_potentiometer);
+
         usleep(700000);
     }
 }
@@ -96,7 +90,6 @@ void menu()
     int choose;
     do
     {
-        clearscr();
         printf("-----------------------------------------\n");
         printf("Temperatura Referência: %4.2f\n", 12.8);
         printf("Temperatura Interna: %4.2f\n", 12.8);
@@ -122,20 +115,19 @@ void menu()
 void define_reference()
 {
     float reference;
-    clearscr();
     printf("Temperatura referência: ");
     scanf("%f", &reference);
     if (reference <= TE || reference >= 100)
     {
-        pid_update_reference(reference);
-        TR = reference;
         reference_potentiometer = 0;
     }
-    clearscr();
 }
 
-void clearscr(void)
-{
-    for (int i = 0; i < 50; i++)
-        printf("\n");
+void set_reference_input(int use_potenciometer, float new_reference){
+    printf("%4.2f", new_reference);
+    reference_potentiometer = use_potenciometer;
+    if(!use_potenciometer) {
+        pid_update_reference(new_reference);
+        TR = new_reference;
+    }
 }
