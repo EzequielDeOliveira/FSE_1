@@ -27,6 +27,7 @@ int main(int argc, char *argv[])
     gpio_setup();
     bme280_setup();
     csv_setup();
+    init_uart();
 
     pthread_create(&tid[0], NULL, (void *)main_loop, (void *)NULL);
     pthread_create(&tid[1], NULL, (void *)menu, (void *)NULL);
@@ -42,6 +43,7 @@ void finish()
     deactivate_fan_and_resistor();
     ClrLcd();
     close_bme280();
+    close_uart();
     exit(0);
 }
 
@@ -77,7 +79,7 @@ void main_loop()
 
         manage_gpio_devices(control_output);
 
-        if (time_to_write_csv = 0)
+        if (time_to_write_csv == 0)
             time_to_write_csv++;
         else if (time_to_write_csv == 1)
         {
@@ -85,7 +87,7 @@ void main_loop()
             time_to_write_csv = 0;
         }
 
-        usleep(1000000);
+        usleep(700000);
     }
 }
 

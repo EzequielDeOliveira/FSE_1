@@ -6,9 +6,10 @@
 #include "crc16.h"
 #include "uart.h"
 
+int uart0 = -1;
+
 int init_uart()
 {
-    int uart0 = -1;
     uart0 = open("/dev/serial0", O_RDWR | O_NOCTTY | O_NDELAY);
     if (uart0 == -1)
     {
@@ -24,6 +25,10 @@ int init_uart()
     tcflush(uart0, TCIFLUSH);
     tcsetattr(uart0, TCSANOW, &options);
     return uart0;
+}
+
+void close_uart() {
+    close(uart0);
 }
 
 void write_uart_message(int uart0, int code)
@@ -62,7 +67,7 @@ void write_uart_message(int uart0, int code)
             exit(1);
         }
     }
-    usleep(1000000);
+    usleep(100000);
 }
 
 float read_uart_message(int uart0)
@@ -117,26 +122,22 @@ float read_uart_message(int uart0)
 
 float pontentiometer_temperature(float previous_temp)
 {
-    int uart = init_uart();
-    write_uart_message(uart, 2);
-    float temp = read_uart_message(uart);
+    write_uart_message(uart0, 2);
+    float temp = read_uart_message(uart0);
     if (temp < 0 )
     {
         temp = previous_temp;
     }
-    close(uart);
     return temp;
 }
 
 float lm35_temperature(float previous_temp)
 {
-    int uart = init_uart();
-    write_uart_message(uart, 1);
-    float temp = read_uart_message(uart);
+    write_uart_message(uart0, 1);
+    float temp = read_uart_message(uart0);
     if (temp < 0)
     {
         temp = previous_temp;
     }
-    close(uart);
     return temp;
 }
